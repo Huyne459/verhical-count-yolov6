@@ -7,7 +7,7 @@ yolov6_model = my_yolov6("weights/yolov6m.pt","cpu","data/coco.yaml", 640, True)
 
 
 # define a video capture object
-vid = cv2.VideoCapture('/home/huy/Desktop/TL-tech/Verhical_count/data/videorun/cam 2/1809.mp4')
+vid = cv2.VideoCapture('/media/huy/c05b0f00-d3be-4144-aa0d-01820543f0eb/huy/TL-tech/dataset/verhical/videorun/cam 2/1809.mp4')
 width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 size = (width, height)
@@ -32,7 +32,7 @@ while (True):
     except:
         break
 
-    print('boxs: ', det)
+    # print('boxs: ', det)
 
     # Display the resulting frame
     cv2.line(frame, (0, middle_line_position), (iw, middle_line_position), (255, 0, 255), 2)
@@ -52,15 +52,7 @@ while (True):
 
 with open("data.csv", 'w') as f1:
     cwriter = csv.writer(f1)
-    names = [ 'Direction','person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light',
-         'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
-         'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee',
-         'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard',
-         'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-         'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch',
-         'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
-         'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear',
-         'hair drier', 'toothbrush' ]
+    names = [ 'Direction','car', 'motorcycle','bus', 'truck']
     cwriter.writerow(names)
     up_list.insert(0, "Up")
     down_list.insert(0, "Down")

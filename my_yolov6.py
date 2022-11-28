@@ -5,7 +5,6 @@ import cv2
 
 # from tracker import *
 from sort import *
-from convert_time import display_time
 
 from yolov6.utils.events import load_yaml
 from yolov6.layers.common import DetectBackend
@@ -24,10 +23,12 @@ middle_line_position = 700
 up_line_position = middle_line_position - 30
 down_line_position = middle_line_position + 30
 
+required_class_index = [2, 3, 5, 7]
+
 temp_up_list = []
 temp_down_list = []
-up_list = [0] * 80
-down_list = [0] * 80
+up_list = [0] * 4
+down_list = [0] * 4
 
 up_detail = []
 down_detail = []
@@ -144,13 +145,11 @@ class my_yolov6():
 
         # Find the current position of the vehicle
         if (iy > up_line_position) and (iy < middle_line_position):
-            print("hello")
             if id not in temp_up_list:
                 temp_up_list.append(id)
                 # up_detail.append([id, index, display_time(frame_now//30), "unknown"])
 
         elif iy < down_line_position and iy > middle_line_position:
-            print("hello1")
             if id not in temp_down_list:
                 temp_down_list.append(id)
                 # down_detail.append([id, index, display_time(frame_now//30), "unknown"])
@@ -158,7 +157,6 @@ class my_yolov6():
 
         elif iy < up_line_position:
             if id in temp_down_list:
-                print("hello2")
                 temp_down_list.remove(id)
                 # up_detail[-1] = display_time(frame_now//30)
                 up_list[index] = up_list[index] + 1
@@ -196,39 +194,33 @@ class my_yolov6():
                 label = f'{self.class_names[class_num]} {conf:.2f}'
                 self.plot_box_and_label(img_src, max(round(sum(img_src.shape) / 2 * 0.003), 2), xyxy, label, color=(255,0,0))
                 x, y, w, h = int(xyxy[0]), int(xyxy[1]), int(xyxy[2]), int(xyxy[3])
-                # print("xyxy: ", xyxy)
-                # print(type(xyxy))
-                if h > 400:
-                    detection.append([x, y, w, h, class_num])
+
 
             img_src = np.asarray(img_src)
 
-            # print(det[0])
-            # print("end")
+            
             det = det.tolist()
-            # print(len(det))
-            # print((det))
             accept_list = []
             for obj in det:
-                # print("end")
-                if int(obj[-1]) != 0:
-                    # print("person")
-                    # det.remove(obj)
+                if int(obj[-1]) in required_class_index:
+                    obj[-1] = required_class_index.index(int(obj[-1]))
                     if int(obj[3]) > up_line_position:
-                        # print("out")
-                        # det.remove(obj)
                         accept_list.append(obj)
             print(accept_list)
+            print(len(accept_list))
             det = torch.Tensor(accept_list)
+            print(len(det))
             if len(det) == 0:
                 pass
             else:
                 track_bbs_ids = tracker.update(det)
-                for box_id in track_bbs_ids:
-                    # print(class_num)
-                    # print(box_id)
+                print(track_bbs_ids.shape)
+                if track_bbs_ids.shape[0] == 0:
+                    pass
+                else:
+                    for i in range (track_bbs_ids.shape[0]):
 
-                    self.count_vehicle(box_id, class_num, img_src)
+                        self.count_vehicle(track_bbs_ids[i], accept_list[i][-1], img_src)
 
 
 
